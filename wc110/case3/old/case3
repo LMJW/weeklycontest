@@ -1,0 +1,80 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+func abs(x int) int {
+	if x >= 0 {
+		return x
+	}
+	return -x
+}
+
+func findminheight(y1, y2 []int) int {
+	var n, m = len(y1), len(y2)
+	var i, j int
+	var lowerb, higherb, count int
+	sort.Ints(y1)
+	sort.Ints(y2)
+	for i < n && j < m {
+		if y1[i] == y2[j] {
+			if count == 0 {
+				lowerb = y1[i]
+				count++
+			} else {
+				higherb = y1[i]
+				break
+			}
+			i++
+			j++
+		} else if y1[i] < y2[j] {
+			i++
+		} else {
+			j++
+		}
+	}
+	if higherb > lowerb {
+		return higherb - lowerb
+	}
+	return 0
+}
+
+func minAreaRect(points [][]int) int {
+	var m = map[int][]int{}
+	var area = 1 << 62
+	var keys []int
+	for _, v := range points {
+		m[v[0]] = append(m[v[0]], v[1])
+	}
+	for k := range m {
+		if len(m[k]) > 1 {
+			keys = append(keys, k)
+		}
+	}
+	sort.Ints(keys)
+	for i, j := 0, 1; j < len(keys); {
+		dx := abs(keys[i] - keys[j])
+		dy := findminheight(m[keys[i]], m[keys[j]])
+		fmt.Println(dx, dy, i, j)
+		if dy != 0 {
+			if area > dx*dy {
+				area = dx * dy
+			}
+			i++
+			j++
+		} else {
+			j++
+			continue
+		}
+	}
+	if area == 1<<62 {
+		return 0
+	}
+	return area
+}
+
+func main() {
+	fmt.Println(minAreaRect([][]int{[]int{1, 1}, []int{1, 3}, []int{3, 1}, []int{3, 3}, []int{4, 1}, []int{4, 3}}))
+}

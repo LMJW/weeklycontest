@@ -1,0 +1,71 @@
+package main
+
+import (
+	"fmt"
+)
+
+func numSubarraysWithSum(A []int, S int) int {
+	var n = len(A)
+	if n == 0 {
+		return 0
+	} else if n == 1 {
+		if A[0] == S {
+			return 1
+		}
+		return 0
+	}
+	var i, j = 0, 1
+	var sum = A[i]
+	var count int
+	for i != n {
+		if j < n {
+			if A[j] == S {
+				count++
+			}
+			if sum < S {
+				sum += A[j]
+				j++
+			} else if sum == S {
+				count++
+				var left = i
+				var right = j
+				// fmt.Println("j", j)
+				for right < n && A[right] == 0 {
+					if A[right] == S {
+						count++
+					}
+					count++
+					right++
+
+				}
+				j = right
+				// fmt.Println("j", j)
+				for left < n && A[left] == 0 {
+					count++
+					left++
+				}
+				i = left
+				if j < n {
+					sum += A[j]
+					j++
+				}
+			} else if sum > S {
+				sum -= A[i]
+				i++
+			}
+		} else if j >= n {
+			if sum == S {
+				count++
+			}
+			sum -= A[i]
+			i++
+		}
+		// fmt.Println(i, j, count, sum)
+	}
+	return count
+}
+
+func main() {
+	fmt.Println(numSubarraysWithSum([]int{1, 0, 1, 0, 1}, 2))
+	fmt.Println(numSubarraysWithSum([]int{0, 0, 0, 0, 0}, 0))
+}

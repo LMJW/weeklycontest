@@ -2,24 +2,27 @@ package main
 
 import "fmt"
 
-func subarraysDivByK(A []int, K int) int {
-	var tmp = make([]int, len(A))
-	var count int
-	for i := 0; i < len(A); i++ {
-		var t = A[i] % K
-		if t == 0 {
-			count++
-		}
-		tmp[i] = t
+type point struct {
+	start int
+	end   int
+	val   int
+}
 
-		for j := 0; j < i; j++ {
-			tmp[j] += t
-			tmp[j] %= K
-			if tmp[j] == 0 {
-				count++
-			}
+func subarraysDivByK(A []int, K int) int {
+	var count int
+	var stack []point
+	var matched []point
+	for i := 0; i < len(A); i++ {
+		l := len(stack)
+		if A[i]%K == 0 {
+			matched = append(matched, point{start: i, end: i})
+		} else if l == 0 {
+			stack = append(stack, point{start: i, end: i, val: A[i]})
+		} else {
+			for
 		}
 	}
+
 	return count
 }
 

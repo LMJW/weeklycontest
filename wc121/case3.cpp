@@ -1,9 +1,10 @@
 #include <iostream>
+#include <numeric>
 #include <vector>
 
 using namespace std;
 
-const int MAX_COST = 1001;
+const int MAX_COST = numeric_limits<int>::max();
 
 class Solution {
 public:

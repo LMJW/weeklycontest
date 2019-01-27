@@ -11,29 +11,39 @@ public:
         int l = days.size();
 
         vector<int> dp(days[l - 1] + 1, 0);
+        vector<bool> travel(days[l - 1] + 1, false);
         vector<int> ticket = {1, 7, 30};
 
-        for (int j = 1; j < dp.size(); ++j) {
-            int cmin = MAX_COST;
-            cout << j << "::";
-            for (int i = 0; i < 3; i++) {
-                int cur = MAX_COST;
-                int last = j - ticket[i];
-                if (last < 0) {
-                    cur = costs[i];
-                } else {
-                    cur = dp[last] + costs[i];
+        for (int j = 0; j < days.size(); ++j) {
+            travel[days[j]] = true;
+        }
+
+        for (int i = 1; i < dp.size(); ++i) {
+            if (travel[i]) {
+                int cmin = MAX_COST;
+
+                for (int t = 0; t < 3; ++t) {
+                    int last = i - ticket[t];
+                    int cur;
+                    if (last < 0) {
+                        cur = costs[t];
+                    } else {
+                        cur = dp[last] + costs[t];
+                    }
+
+                    if (cur < cmin) {
+                        cmin = cur;
+                    }
                 }
 
-                if (cur < cmin) {
-                    cmin = cur;
-                }
-                cout << cur << " ";
+                dp[i] = cmin;
+            } else {
+                dp[i] = dp[i - 1];
             }
-            dp[j] = cmin;
-            cout << " |" << cmin << " \n";
+            // cout << i << ": " << dp[i] << " \n";
         }
-        return dp[l];
+
+        return dp[days[l - 1]];
     }
 };
 

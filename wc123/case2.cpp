@@ -58,6 +58,25 @@ public:
                 }
             }
         }
+        for (int i = 0; i < 26; ++i) {
+            if (dp[v2][i] == 1) {
+                if (dp[i][v1] == 0) {
+                    dp[i][v1] = res;
+                    dp[v1][i] = res;
+                } else if (dp[i][v1] != res) {
+                    return false;
+                }
+            } else if (dp[v2][i] == -1) {
+                if (res == 1) {
+                    if (dp[i][v1] == 0) {
+                        dp[i][v1] = -1;
+                        dp[v1][i] = -1;
+                    } else if (dp[i][v1] != -1) {
+                        return false;
+                    }
+                }
+            }
+        }
         return true;
     }
 };

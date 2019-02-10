@@ -1,80 +1,74 @@
 #include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
+
+struct disjointset {
+    disjointset() {}
+    unordered_map<int, int> ds;
+    unordered_set<int> ueq;
+    bool addequal(int v1, int v2) {
+        int p1 = parent(v1);
+        int p2 = parent(v2);
+        if (ueq.find(p1) != ueq.end() && ueq.find(p2) != ueq.end()) {
+            return false;
+        }
+        ds[p1] = p2;
+        return true;
+    }
+    bool add_unequal(int v1, int v2) {
+        int p1 = parent(v1);
+        int p2 = parent(v2);
+        if (p1 == p2) {
+            return false;
+        }
+        ueq.insert(p1);
+        ueq.insert(p2);
+        return true;
+    }
+    int parent(int v) {
+        if (ds.find(v) == ds.end()) {
+            ds[v] = v;
+            return ds[v];
+        }
+
+        while (ds[v] != v) {
+            v = ds[v];
+        }
+        return ds[v];
+    }
+};
+
 class Solution {
 public:
     bool equationsPossible(vector<string>& equations) {
-        vector<vector<int>> dp(26, vector<int>(26, 0));
-        /// 0: not sure; 1-> true; -1:false;
-
-        for (int i = 0; i < 26; ++i) {
-            dp[i][i] = 1;
-        }
+        /// we can use disjoint set to get a clean solution?
+        /// equality can be stored in a disjoint set
+        /// How can i store a!=b, a!=c, a!=d?
+        disjointset ds;
 
         for (auto eq : equations) {
             int v1 = eq[0] - 'a';
             int v2 = eq[3] - 'a';
             bool relation = eq[1] == '=';
             // cout << v1 << " " << v2 << " " << relation << " \n";
-            if (!addtomatrix(dp, v1, v2, relation)) {
+            if (!addtoset(ds, v1, v2, relation)) {
                 return false;
             }
         }
         return true;
     }
 
-    bool addtomatrix(vector<vector<int>>& dp, int v1, int v2, bool rel) {
-        int res;
+    bool addtoset(disjointset& ds, int v1, int v2, bool rel) {
         if (rel) {
-            res = 1;
-        } else {
-            res = -1;
-        }
-        if (dp[v1][v2] != dp[v2][v1]) {
-            return false;
-        } else if (dp[v1][v2] != 0 && dp[v1][v2] != res) {
-            return false;
-        } else {
-            dp[v1][v2] = res;
-            dp[v2][v1] = res;
-        }
-        for (int i = 0; i < 26; ++i) {
-            if (dp[v1][i] == 1) {
-                if (dp[i][v2] == 0) {
-                    dp[i][v2] = res;
-                    dp[v2][i] = res;
-                } else if (dp[i][v2] != res) {
-                    return false;
-                }
-            } else if (dp[v1][i] == -1) {
-                if (res == 1) {
-                    if (dp[i][v2] == 0) {
-                        dp[i][v2] = -1;
-                        dp[v2][i] = -1;
-                    } else if (dp[i][v2] != -1) {
-                        return false;
-                    }
-                }
+            if (!ds.addequal(v1, v2)) {
+                return false;
             }
-        }
-        for (int i = 0; i < 26; ++i) {
-            if (dp[v2][i] == 1) {
-                if (dp[i][v1] == 0) {
-                    dp[i][v1] = res;
-                    dp[v1][i] = res;
-                } else if (dp[i][v1] != res) {
-                    return false;
-                }
-            } else if (dp[v2][i] == -1) {
-                if (res == 1) {
-                    if (dp[i][v1] == 0) {
-                        dp[i][v1] = -1;
-                        dp[v1][i] = -1;
-                    } else if (dp[i][v1] != -1) {
-                        return false;
-                    }
-                }
+        } else {
+            if (!ds.add_unequal(v1, v2)) {
+                return false;
             }
         }
         return true;
@@ -82,7 +76,7 @@ public:
 };
 
 int main() {
-    auto a = vector<string>{"a==b", "c!=b", "a==c"};
+    auto a = vector<string>{"a==b", "c==b", "a==c"};
     auto x = Solution().equationsPossible(a);
     cout << x << endl;
 }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <unordered_set>
 #include <vector>
+#include <unordered_map>
 
 using namespace std;
 
@@ -56,12 +57,43 @@ public:
         }
 
         int res_count = 0;
+        /// ugly solution
+        unordered_map<int,int> hash_a;
+        for(int i =0;i<A.size();++i){
+            if(hash_a.find(A[i]) == hash_a.end()){
+                hash_a[A[i]]=1;
+            }else{
+                ++hash_a[A[i]];
+            }
+        }
+
+
         for(auto it = store.begin(); it !=store.end();++it){
             auto tmp = *it;
-            if (tmp.v.size()<A.size()){
+            if (tmp.v.size()!=A.size()){
                 continue;
             }else if(tmp.v.size() == A.size()){
-                ++res_count;
+                bool all_same = true;
+                unordered_map<int,int> hash_tmp;
+                for(int i =0;i<tmp.v.size();++i){
+                    if(hash_tmp.find(tmp.v[i]) == hash_tmp.end()){
+                        hash_tmp[tmp.v[i]]=1;
+                    }else{
+                        ++hash_tmp[tmp.v[i]];
+                    }
+                }
+
+                for(auto it = hash_tmp.begin(); it!=hash_tmp.end();++it){
+                    auto key = it->first;
+                    auto val = it->second;
+                    if (val != hash_a[key]){
+                        all_same = false;
+                        break;
+                    }
+                }
+                if(all_same){
+                    ++res_count;
+                }
             }
         }
         return  res_count;
@@ -105,7 +137,7 @@ public:
 };
 
 int main() {
-    vector<int> a = vector<int>{1,17,8};
+    vector<int> a = vector<int>{0,0,0,0,1,1,1,1};
     auto x = Solution().numSquarefulPerms(a);
     cout << x << endl;
 }

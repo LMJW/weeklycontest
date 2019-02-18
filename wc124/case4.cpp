@@ -50,7 +50,14 @@ public:
 
         /// ugly solution
         /// ugly solution wouldn't work
-        return store.size();
+        int count = 0;
+        for (auto it = store.begin(); it != store.end(); ++it) {
+            if (it->v.size() == A.size()) {
+                ++count;
+            }
+        }
+
+        return count;
     }
 
     /// Calculate whether the sum of two number is sqareful root
@@ -65,27 +72,32 @@ public:
               unordered_set<int> used,
               const vector<int>& A) {
         /// assume path length > 0
-        int last_ele = path.back();
-        if (path.size() < A.size()) {
-            for (int i = 0; i < A.size(); ++i) {
-                unordered_set<int> cpused(used);
-                if (cpused.find(i) == cpused.end() && check(last_ele, A[i])) {
-                    vector<int> nv(path);
-                    nv.push_back(A[i]);
-                    cpused.insert(i);
-                    _dfs(nv, store, cpused, A);
+        auto t = myhashvec(path);
+        if (store.find(t) == store.end()) {
+            int last_ele = path.back();
+            if (path.size() < A.size()) {
+                for (int i = 0; i < A.size(); ++i) {
+                    unordered_set<int> cpused(used);
+                    if (cpused.find(i) == cpused.end() &&
+                        check(last_ele, A[i])) {
+                        vector<int> nv(path);
+                        nv.push_back(A[i]);
+                        cpused.insert(i);
+                        _dfs(nv, store, cpused, A);
+                    }
                 }
+                store.insert(myhashvec(path));
+            } else if (path.size() == A.size()) {
+                store.insert(myhashvec(path));
+            } else {
+                throw "haha, wrong";
             }
-        } else if (path.size() == A.size()) {
-            store.insert(myhashvec(path));
-        } else {
-            throw "haha, wrong";
         }
     }
 };
 
 int main() {
-    vector<int> a = vector<int>{2, 2, 2, 2, 2, 2, 2, 2};
+    vector<int> a = vector<int>{0, 0, 0, 0, 1, 1, 1, 1};
     auto x = Solution().numSquarefulPerms(a);
     cout << x << endl;
 }

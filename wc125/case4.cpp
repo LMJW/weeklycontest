@@ -1,31 +1,66 @@
 #include <iostream>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 using namespace std;
 
+struct point {
+    int x, y;
+    point(int x, int y) : x(x), y(y) {}
+    friend bool operator==(const point& p1, const point& p2) {
+        return p1.x == p2.x && p1.y == p2.y;
+    }
+};
+
+template <>
+struct hash<point> {
+    std::size_t operator()(const point& p) const {
+        return (hash<int>()(p.x) ^ (hash<int>()(p.y) >> 1));
+    }
+};
+
 struct grid {
     int N;
-    vector<unordered_set<int>> rows;
-    vector<unordered_set<int>> cols;
-    vector<unordered_set<int>> fslash;
-    vector<unordered_set<int>> bslash;
-    grid(int n)
-        : N(n), rows(n), cols(n), fslash(2 * n - 1), bslash(2 * n - 1) {}
+    unordered_map<int, int> rows;
+    unordered_map<int, int> cols;
+    unordered_map<int, int> fslash;
+    unordered_map<int, int> bslash;
+    unordered_map<point, int> lmap;
+
+    grid(int n) : N(n) {}
     void add(int x, int y) {
-        rows[x].insert(y);
-        cols[y].insert(x);
+        lmap[point(x, y)] = 1;
+        if (rows.find(x) == rows.end()) {
+            rows[x] = 1;
+        } else {
+            ++rows[x];
+        }
+        if (cols.find(y) == cols.end()) {
+            cols[y] = 1;
+        } else {
+            ++cols[y];
+        }
         int fidx = N - 1 - x + y;
+        if (fslash.find(fidx) == fslash.end()) {
+            fslash[fidx] = 1;
+        } else {
+            ++fslash[fidx];
+        }
         int bidx = 2 * N - 2 - x - y;
-        fslash[fidx].insert(bidx);
-        bslash[bidx].insert(fidx);
+
+        if (bslash.find(bidx) == bslash.end()) {
+            bslash[bidx] = 1;
+        } else {
+            ++bslash[bidx];
+        }
     }
     int query(int x, int y) {
         int fidx = N - 1 - x + y;
         int bidx = 2 * N - 2 - x - y;
         int res = 0;
-        if (rows[x].size() > 0 || cols[y].size() > 0 ||
-            fslash[fidx].size() > 0 || bslash[bidx].size() > 0) {
+        if (rows[x] > 0 || cols[y] > 0 || fslash[fidx] > 0 ||
+            bslash[bidx] > 0) {
             res = 1;
         }
         closelamp(x, y);
@@ -44,19 +79,15 @@ struct grid {
     }
 
     void _close(int x, int y) {
-        if (rows[x].find(y) != rows[x].end()) {
-            rows[x].erase(y);
-        }
-        if (cols[y].find(x) != cols[y].end()) {
-            cols[y].erase(x);
-        }
-        int fidx = N - 1 - x + y;
-        int bidx = 2 * N - 2 - x - y;
-        if (fslash[fidx].find(bidx) != fslash[fidx].end()) {
-            fslash[fidx].erase(bidx);
-        }
-        if (bslash[bidx].find(fidx) != bslash[bidx].end()) {
-            bslash[bidx].erase(fidx);
+        auto p = point(x, y);
+        if (lmap[p] == 1) {
+            --rows[x];
+            --cols[y];
+            int fidx = N - 1 - x + y;
+            int bidx = 2 * N - 2 - x - y;
+            --fslash[fidx];
+            --bslash[bidx];
+            lmap[p] = 0;
         }
     }
 };
@@ -85,7 +116,7 @@ public:
 int main() {
     Solution s;
     vector<vector<int>> lp = {vector<int>{0, 0}, vector<int>{4, 4}};
-    vector<vector<int>> qs = {vector<int>{1, 1}, vector<int>{1, 0}};
+    vector<vector<int>> qs = {vector<int>{1, 1}, vector<int>{1, 1}};
     auto x = s.gridIllumination(5, lp, qs);
     for (auto p : x) {
         cout << p << endl;

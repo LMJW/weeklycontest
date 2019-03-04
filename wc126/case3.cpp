@@ -61,9 +61,8 @@ public:
                         // of cur_val will not change; So here we just need to
                         // slide the i to right, and then we can continue right
                         // slide.
-                        ++i;
-                        break;
-                        // the equivalent complex version is like:
+
+                        // // the equivalent complex version is like:
                         // //-------
                         // ++cur_k; // for sliding the A[i]
                         // --cur_val; // result of sliding left pointer to right
@@ -72,6 +71,15 @@ public:
                         // ++i; // indicate the left pointer sliding right
                         // break; // as we finished left slidng and it will
                         // satisfy the right sliding
+                        ++i;
+                        if (K == 0) {
+                            cur_val = max(0, cur_val - 1);
+                        }
+                        break;
+                        // The buggy part is actually here. Here we made a claim
+                        // that we will at least allow one flip. But it can be
+                        // 0, so we need to consider this fact that the K can be
+                        // zero.
                     }
                     ++i;        // whenever we slide left, we need to add i
                     --cur_val;  // and we need to reduce the value of cur_val
@@ -86,6 +94,6 @@ public:
 int main() {
     Solution s;
     vector<int> a = {0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1};
-    auto x = s.longestOnes(a, 0);
+    auto x = s.longestOnes(a, 3);
     cout << x << "!";
 }

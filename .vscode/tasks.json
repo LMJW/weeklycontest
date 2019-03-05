@@ -6,7 +6,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "g++ -pipe -g -std=c++11 ./wc123/case3.cpp -o ./wc123/a.out",
+            "command": "g++ -pipe -g -std=c++11 ${file}",
             "problemMatcher": [
                 "$gcc"
             ]

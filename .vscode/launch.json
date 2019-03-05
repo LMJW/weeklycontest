@@ -8,7 +8,7 @@
             "name": "(lldb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/wc124/a.out",
+            "program": "${workspaceFolder}/a.out",
             "preLaunchTask": "build",
             "args": [],
             "stopAtEntry": false,

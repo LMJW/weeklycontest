@@ -9,28 +9,12 @@ using namespace std;
 class Solution {
 public:
     int numPairsDivisibleBy60(vector<int>& time) {
-        // 1. for every number, module 60
-        // use map[int, vector<int>]
-        // key -> value
-        // val -> vector of index
-        map<int, vector<int>> hash;
-        for (int i = 0; i < time.size(); ++i) {
-            time[i] %= 60;
-            hash[time[i]].push_back(i);
-        }
-
-        // each time, get its pair
+        vector<int> k(60);
         int count = 0;
-        for (int i = 0; i < time.size(); ++i) {
-            auto d = (60 - time[i]) % 60;
-            if (hash.find(d) != hash.end()) {
-                auto v = hash[d];
-                for (int j = 0; j < v.size(); ++j) {
-                    if (v[j] > i) {
-                        ++count;
-                    }
-                }
-            }
+        for (auto t : time) {
+            t %= 60;
+            count += k[(60 - t) % 60];
+            ++k[t];
         }
         return count;
     }
